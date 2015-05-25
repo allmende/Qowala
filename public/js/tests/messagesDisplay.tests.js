@@ -500,5 +500,132 @@ describe("messagesDisplay", function(){
 				.toEqual(2);
 		});
 
+	describe("compareCurrentListWithIncoming()", function(){
+		beforeEach(function() { 
+			this.messagesDisplay = new MessagesDisplay();
+			this.messagesDisplay.numberMessagesLimit = 3;
+		});
+
+		it("should return all the incoming if current is empty", function(){
+			var current = [];
+			var incoming = [
+				{
+					id_str: '599583255113891841'
+				},
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+			];
+			
+			var difference = this.messagesDisplay.compareCurrentListWithIncoming(incoming, current);
+
+			expect(difference.messagesToAdd).toBeDefined();
+			expect(difference.messagesToAdd).not.toBe(null);
+			expect(difference.messagesToAdd).toEqual(incoming);
+		});
+
+		it("should return the messages to add between the current array and the incoming one", function(){
+			var current = [
+				{
+					id_str: '599583255113891841'
+				},
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+			];
+
+			var incoming = [
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+				{
+					id_str: '599583255113891844'
+				},
+			];
+
+			var difference = this.messagesDisplay.compareCurrentListWithIncoming(incoming, current);
+
+			expect(difference.messagesToAdd).toBeDefined();
+			expect(difference.messagesToAdd).not.toBe(null);
+			expect(difference.messagesToAdd).toEqual(jasmine.arrayContaining([{id_str: '599583255113891844'}]));
+			expect(difference.messagesToAdd).toEqual([{id_str: '599583255113891844'}]);
+
+		});
+
+		it("should return an empty array if the current array and the incoming are the same", function(){
+			var current = [
+				{
+					id_str: '599583255113891841'
+				},
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+			];
+
+			var incoming = [
+				{
+					id_str: '599583255113891841'
+				},
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+			];
+
+			var difference = this.messagesDisplay.compareCurrentListWithIncoming(incoming, current);
+
+			expect(difference.messagesToAdd).toBeDefined();
+			expect(difference.messagesToAdd).not.toBe(null);
+			expect(difference.messagesToAdd).toEqual([]);
+		});
+
+		xit("should return the messages to be deleted between the current array and the incoming one", function(){
+			// For this test, expect that the API request is asking for the 4 latest messages
+			this.messagesDisplay.numberMessagesLimit = 4;
+			var current = [
+				{
+					id_str: '599583255113891841'
+				},
+				{
+					id_str: '599583255113891842'
+				},
+				{
+					id_str: '599583255113891843'
+				},
+				{
+					id_str: '599583255113891844'
+				},
+			];
+
+			var incoming = [
+				{
+					id_str: '599583255113891843'
+				},
+				{
+					id_str: '599583255113891845'
+				},
+			];
+
+			var difference = this.messagesDisplay.compareCurrentListWithIncoming(incoming, current);
+
+			expect(difference.messagesToDelete).toBeDefined();
+			expect(difference.messagesToDelete).not.toBe(null);
+			expect(difference.messagesToDelete).toEqual([{id_str: '599583255113891844'}, {id_str: '599583255113891842'}]);
+
+		});
 	});
 });

@@ -342,6 +342,75 @@ MessagesDisplay.prototype.deleteColumn = function(columnId){
 }
 
 /**
+ * Return the difference between the current messages in the list and the incoming
+ * @param  {Object} incoming List messages update
+ * @return {Objecy}          Messages not present in the current list
+ */
+MessagesDisplay.prototype.compareCurrentListWithIncoming = function(incoming, current){
+	// Return the elements not present in the array
+	Array.prototype.diff = function(a) {
+	    return this.filter(function(array) {
+	    		var exist = false;
+	    		for (var i = 0; i < a.length; i++) {
+	    			if(array.id_str === a[i].id_str){
+	    				exist = true;
+	    			}
+	    		};
+	    		if(!exist){
+	    			return array;
+	    		}
+	    });
+	};
+	var messagesToAdd = [];	
+	var messagesToDelete = [];
+	
+	messagesToAdd = incoming.diff(current);
+
+	if(this.numberMessagesLimit > incoming.length){
+		// Remove duplicates
+		Array.prototype.unique = function() {
+		    var a = this.concat();
+		    for(var i=0; i<a.length; ++i) {
+		        for(var j=i+1; j<a.length; ++j) {
+		            if(a[i].id_str === a[j].id_str)
+		                a.splice(j--, 1);
+		        }
+		    }
+
+		    return a;
+		};
+
+		// Merge the current and the incoming arrays
+		var mergedArrays = current.concat(incoming).unique();
+
+		/**
+		 * Compare the id_str from bigger to smaller
+		 * @param  {Array} a   [message]
+		 * @param  {Array} b   [message]
+		 * @return {Integer}   [Comparison result]
+		 */
+		function compareIdsInversed(a, b){
+			return  b.id_str - a.id_str;
+		}
+
+		// Sort the id_str from bigger to smaller to be sure it is ordered
+		mergedArrays.sort(compareIdsInversed);
+		
+		// Simulate the array of messages if there were no deletion by taking the last messages allowed by the messages limit defined in MessagesDisplay
+		var expectedArrayWithoutDeletion = mergedArrays.slice(0, this.numberMessagesLimit);
+
+		messagesToDelete = expectedArrayWithoutDeletion.diff(incoming);
+
+		// console.log('messagesToDelete: ', messagesToDelete);
+	}
+
+	return {
+		messagesToAdd: messagesToAdd,
+		messagesToDelete: messagesToDelete
+	};
+}
+
+/**
  * Create a blank column
  */
 MessagesDisplay.prototype.createBlankColumn = function(){
@@ -457,12 +526,19 @@ MessagesDisplay.prototype.addAllMessages = function(allMessages, id){
 	// console.log('Searching', id, ' in this.messagesColumnsList ', this.messagesColumnsList);
 	for (var y = 0; y < this.messagesColumnsList.length; y++) {
 		if(this.messagesColumnsList[y].id === id){
-			// console.log('Found and gonna reset and display messages');
 			// Reset the messages list before adding new ones
-			this.messagesColumnsList[y].messagesList = [];
-			for (var i = allMessages.length - 1; i >= 0; i--) {
-				this.messagesColumnsList[y].addMessage(allMessages[i], allMessages);
-			};
+			var comparison = this.compareCurrentListWithIncoming(allMessages, this.messagesColumnsList[y].messagesList);
+			console.log('They are ', comparison.messagesToAdd.length, ' messagesToAdd to ', id);
+			// console.log('messagesToAdd : ', comparison.messagesToAdd);
+			var messagesToDisplay = [];
+			for (var z = 0; z < comparison.messagesToAdd.length; z++) {
+				messagesToDisplay.push(this.messagesColumnsList[y].addMessage(comparison.messagesToAdd[z], id));
+			}
+			// Code to be enabled once Twitter message deletion politic with the REST API is understood
+			// console.log('messagesToDelete : ', comparison.messagesToDelete);
+			// for (var i = 0; i < comparison.messagesToDelete.length; y++) {
+			// 	this.deleteMessage(comparison.messagesToDelete[y]); 
+			// };
 			return {streamSource: this.messagesColumnsList[y].id};
 		}
 	}
@@ -489,6 +565,20 @@ MessagesDisplay.prototype.displayAllMessages = function(message){
 		if(this.messagesColumnsList[i].id == message.streamSource){
 			this.messagesColumnsList[i].displayAllMessages();
 		}
+	};
+}
+
+/**
+ * Communicate all messages display command to the concerning column
+ * @param  {Object} message Message to be added
+ */
+MessagesDisplay.prototype.displayAllMessagesOnePerOne = function(messages){
+	for (var i = 0; i < this.messagesColumnsList.length; i++) {
+		for (var y = messages.length - 1; y >= 0; y--) {
+			if(this.messagesColumnsList[i].id == messages[y].streamSource){
+				this.messagesColumnsList[i].displayOneMessage(messages[y]);
+			}
+		};
 	};
 }
 

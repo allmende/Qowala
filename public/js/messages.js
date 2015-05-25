@@ -203,7 +203,6 @@ Message.prototype.sendRetweet = function(){
 		var bindedFunction = (sendRetweetCommand).bind(this)
 
 		retweetButton.addEventListener('click', bindedFunction, true);
-
 	}
 }
 
