@@ -499,6 +499,7 @@ describe("messagesDisplay", function(){
 			expect(this.messagesDisplay.messagesColumnsList[0].messagesList.length)
 				.toEqual(2);
 		});
+	});
 
 	describe("compareCurrentListWithIncoming()", function(){
 		beforeEach(function() { 
@@ -625,6 +626,81 @@ describe("messagesDisplay", function(){
 			expect(difference.messagesToDelete).toBeDefined();
 			expect(difference.messagesToDelete).not.toBe(null);
 			expect(difference.messagesToDelete).toEqual([{id_str: '599583255113891844'}, {id_str: '599583255113891842'}]);
+
+		});
+	});
+	describe("addAllMessages()", function(){
+		beforeEach(function() {
+			this.messagesDisplay = new MessagesDisplay();
+			this.messagesDisplay.numberMessagesLimit = 3;
+			var column = new MessagesColumn(2,
+				'name',
+				'type',
+				this.messagesDisplay
+			);
+			column.messagesList = [
+				{
+					id_str: '599583255113891841',
+					user:'john'
+				},
+				{
+					id_str: '599583255113891842',
+					user:'john'
+				},
+				{
+					id_str: '599583255113891843',
+					user:'john'
+				},
+			]
+			
+			this.messagesDisplay.messagesColumnsList.push(column);
+		});
+
+		it("should return the messages to add between the current array \
+			and the incoming one", function(){
+			
+
+			var incoming = [
+				{
+					id_str: '599583255113891842',
+					user:'john',
+					entities: {}
+				},
+				{
+					id_str: '599583255113891843',
+					user:'john',
+					entities: {}
+				},
+				{
+					id_str: '599583255113891844',
+					user:'john',
+					entities: {}
+				},
+			];
+
+			var messagesToDisplay = this.messagesDisplay.addAllMessages(
+				incoming,
+				2
+			);
+
+			witnessMessage = new Message(
+				{
+					id_str: '599583255113891844',
+					user:'john',
+					entities: {}
+				},
+				2,
+				true
+			);
+
+			witnessMessage.processDate();
+
+			expect(messagesToDisplay).toBeDefined();
+			expect(messagesToDisplay).not.toBe(null);
+			expect(messagesToDisplay).toEqual(jasmine.arrayContaining(
+				[witnessMessage]
+			));
+			expect(messagesToDisplay).toEqual([witnessMessage]);
 
 		});
 	});

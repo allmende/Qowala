@@ -12,12 +12,12 @@
  *                                   for all the columns
  */
 function MessagesDisplay(columnsListHTML){
-	this.columnsId = 0;
-	this.messagesColumnsList = [];
-	this.messagesColumnsHTML = columnsListHTML;
-	this.twitterLists = [];
-	this.columnsLayout = [];
-	this.enabledTagsList = [];
+    this.columnsId = 0;
+    this.messagesColumnsList = [];
+    this.messagesColumnsHTML = columnsListHTML;
+    this.twitterLists = [];
+    this.columnsLayout = [];
+    this.enabledTagsList = [];
 }
 
 /**
@@ -25,7 +25,7 @@ function MessagesDisplay(columnsListHTML){
  * @param  {Object} listsObject Object of lists
  */
 MessagesDisplay.prototype.storeTwitterLists = function(listsObject){
-	this.twitterLists = listsObject;
+    this.twitterLists = listsObject;
 }
 
 /**
@@ -33,29 +33,29 @@ MessagesDisplay.prototype.storeTwitterLists = function(listsObject){
  * @return {Array} available Twitter lists
  */
 MessagesDisplay.prototype.updateColumnsTwitterLists = function(){
-	var availableLists = [];
+    var availableLists = [];
 
-	Array.prototype.diff = function(a) {
-	    return this.filter(function(array) {
-	    		var exist = false;
-	    		for (var i = 0; i < a.length; i++) {
-	    			if(array.id === a[i].listId){
-	    				exist = true;
-	    			}
-	    		};
-	    		if(!exist){
-	    			return array;
-	    		}
-	    });
-	};
+    Array.prototype.diff = function(a) {
+        return this.filter(function(array) {
+                var exist = false;
+                for (var i = 0; i < a.length; i++) {
+                    if(array.id === a[i].listId){
+                        exist = true;
+                    }
+                };
+                if(!exist){
+                    return array;
+                }
+        });
+    };
 
-	availableLists = this.twitterLists.diff(this.columnsLayout);
+    availableLists = this.twitterLists.diff(this.columnsLayout);
 
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		this.messagesColumnsList[i].updateTwitterLists(availableLists);
-	};	
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        this.messagesColumnsList[i].updateTwitterLists(availableLists);
+    };
 
-	return availableLists;
+    return availableLists;
 }
 
 /**
@@ -63,7 +63,7 @@ MessagesDisplay.prototype.updateColumnsTwitterLists = function(){
  * @param  {Object} columnsLayout Column's layout
  */
 MessagesDisplay.prototype.storeColumnsLayout = function(columnsLayout){
-	this.columnsLayout = columnsLayout;
+    this.columnsLayout = columnsLayout;
 }
 
 /**
@@ -72,105 +72,109 @@ MessagesDisplay.prototype.storeColumnsLayout = function(columnsLayout){
  * @return {[type]}          [description]
  */
 MessagesDisplay.prototype.processIncoming = function(incoming){
-	if (incoming.streamSource === 'user' ) {
-		var messageToDisplay = this.addOneMessage(incoming.tweet, 'home');
-		if(messageToDisplay !== undefined){
-			this.displayOneMessage(messageToDisplay);
-		}
-	}
-	else if (incoming.streamSource === 'tracking') {
-		for (var i = 0; i < this.columnsLayout.length; i++) {
-			if(this.columnsLayout[i].type === 'tracking') {
-				for (var z = 0; z < incoming.updatedTags.length; z++) {
-					var hashtags = this.columnsLayout[i].hashtags;
-					if (hashtags.indexOf(incoming.updatedTags[z]) !== -1) {
-						var messageToDisplay = this.addOneMessage(
-							incoming.tweet,
-							this.columnsLayout[i].id
-						);
-						if(messageToDisplay !== undefined){
-							this.displayOneMessage(messageToDisplay);
-						}
-					}
-				};
-			}
-		};
-	}
-	else if (incoming.streamSource === 'search-timeline') {
-		for (var i = 0; i < this.columnsLayout.length; i++) {
-			if(this.columnsLayout[i].type === 'tracking') {
-				var hashtags = this.columnsLayout[i].hashtags;
-				if (hashtags.indexOf(incoming.keyword.slice(1)) !== -1) {
-					var tweets = incoming.tweet.statuses;
-					for (var j = tweets.length - 1; j >= 0; j--) {
-						var messageToDisplay = this
-							.addOneMessage(
-								tweets[j],
-								this.columnsLayout[i].id
-							);
-						this.displayOneMessage(messageToDisplay);
-					};
-				}
-			}
-		}
-	}
-	else if (incoming.streamSource === 'lists') {
-		// console.log('Got message from lists');
-		for (var list in incoming.tweet) {
-			// console.log('Searching ', list, ' in ', this.columnsLayout);
-			for (var i = 0; i < this.columnsLayout.length; i++) {
-				if(this.columnsLayout[i].listId) {
-					var listId = this.columnsLayout[i].listId.toString();
-				}
-				else {
-					var listId = null;
-				}
-				if(listId === list){
-					var messagesToDisplay = this.addAllMessages(
-						incoming.tweet[list],
-						this.columnsLayout[i].id
-					);
-					if(messagesToDisplay !== undefined){
-						this.displayAllMessages(messagesToDisplay);
-					}
-				}
-			}
-		}
-	}
+    if (incoming.streamSource === 'user' ) {
+        var messageToDisplay = this.addOneMessage(incoming.tweet, 'home');
+        if(messageToDisplay !== undefined){
+            this.displayOneMessage(messageToDisplay);
+        }
+    }
+    else if (incoming.streamSource === 'tracking') {
+        for (var i = 0; i < this.columnsLayout.length; i++) {
+            if(this.columnsLayout[i].type === 'tracking') {
+                for (var z = 0; z < incoming.updatedTags.length; z++) {
+                    var hashtags = this.columnsLayout[i].hashtags;
+                    if (hashtags.indexOf(incoming.updatedTags[z]) !== -1) {
+                        var messageToDisplay = this.addOneMessage(
+                            incoming.tweet,
+                            this.columnsLayout[i].id
+                        );
+                        if(messageToDisplay !== undefined){
+                            this.displayOneMessage(messageToDisplay);
+                        }
+                    }
+                };
+            }
+        };
+    }
+    else if (incoming.streamSource === 'search-timeline') {
+        for (var i = 0; i < this.columnsLayout.length; i++) {
+            if(this.columnsLayout[i].type === 'tracking') {
+                var hashtags = this.columnsLayout[i].hashtags;
+                if (hashtags.indexOf(incoming.keyword.slice(1)) !== -1) {
+                    var tweets = incoming.tweet.statuses;
+                    for (var j = tweets.length - 1; j >= 0; j--) {
+                        var messageToDisplay = this
+                            .addOneMessage(
+                                tweets[j],
+                                this.columnsLayout[i].id
+                            );
+                        this.displayOneMessage(messageToDisplay);
+                    };
+                }
+            }
+        }
+    }
+    else if (incoming.streamSource === 'lists') {
+        // console.log('Got message from lists');
+        for (var list in incoming.tweet) {
+            console.log('list: ', list);
+            // console.log('Searching ', list, ' in ', this.columnsLayout);
+            for (var i = 0; i < this.columnsLayout.length; i++) {
+                if(this.columnsLayout[i].type === 'list') {
+                    var listId = this.columnsLayout[i].listId.toString();
+                    console.log('listId: ', listId);
+                    if(listId === list){
+                        var messagesToDisplay = this.addAllMessages(
+                            incoming.tweet[list],
+                            this.columnsLayout[i].id
+                        );
+                        console.log('this.columnsLayout[i].id: ',
+                            this.columnsLayout[i].id)
+                        if(messagesToDisplay != undefined){
+                            console.log('displayAllMessagesOnePerOne');
+                            this.displayAllMessagesOnePerOne(
+                                messagesToDisplay
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
  * Regenerate columns from column's layout
  */
 MessagesDisplay.prototype.addAllColumns = function(){
-	this.messagesColumnsHTML.innerHTML = "";
-	this.messagesColumnsList = [];
+    this.messagesColumnsHTML.innerHTML = "";
+    this.messagesColumnsList = [];
 
-	this.createUserColumn();
-	
-	for (var i = 0; i < this.columnsLayout.length; i++) {
-		if(this.columnsLayout[i].type != 'home'){
-			if(this.columnsId < this.columnsLayout[i].id){
-				this.columnsId = this.columnsLayout[i].id;
-			}
-			else{
-				this.columnsId++;
-			}
+    this.createUserColumn();
 
-			var column = new MessagesColumn(this.columnsLayout[i].id , 
-											this.columnsLayout[i].name, 
-											this.columnsLayout[i].type, 
-											this);
-			this.messagesColumnsList.push(column);
-			column.updateTwitterLists(this.twitterLists);
-			column.updateHashtagsList(this.columnsLayout[i].hashtags);
-			var generatedColumn = column.generateColumn();
+    for (var i = 0; i < this.columnsLayout.length; i++) {
+        if(this.columnsLayout[i].type != 'home'){
+            if(this.columnsId < this.columnsLayout[i].id){
+                this.columnsId = this.columnsLayout[i].id;
+            }
+            else{
+                this.columnsId++;
+            }
 
-			// console.log('Created: ', column);
+            var column = new MessagesColumn(this.columnsLayout[i].id ,
+                                            this.columnsLayout[i].name,
+                                            this.columnsLayout[i].type,
+                                            this);
+            this.messagesColumnsList.push(column);
+            column.updateTwitterLists(this.twitterLists);
+            column.updateHashtagsList(this.columnsLayout[i].hashtags);
+            var generatedColumn = column.generateColumn();
 
-			this.messagesColumnsHTML.appendChild(generatedColumn);
-		}
-	};
+            // console.log('Created: ', column);
+
+            this.messagesColumnsHTML.appendChild(generatedColumn);
+        }
+    };
 }
 
 /**
@@ -180,79 +184,79 @@ MessagesDisplay.prototype.addAllColumns = function(){
  * @return {[type]}               [description]
  */
 MessagesDisplay.prototype.useList = function(twitterListId, columnId){
-	loop:
-	for (var i = 0; i < this.twitterLists.length; i++) {
-		if(this.twitterLists[i].id == twitterListId){
-			if(columnId){
-				for (var y = 0; y < this.columnsLayout.length; y++) {
-					if(this.columnsLayout[y].id === columnId){
-						this.columnsLayout[y].name = this.twitterLists[i].name;
-						this.columnsLayout[y].type = 'list';
-						this.columnsLayout[y].listId = twitterListId;
-						this.columnsLayout[y].hashtags = []
-						for (var z = 0; z < this.messagesColumnsList.length; z++) {
-							if(this.messagesColumnsList[z].id === columnId){
-								this.messagesColumnsList[z].type = 'list';
-								this.messagesColumnsList[z].updateHashtagsList(
-									this.columnsLayout[y].hashtags
-								);
-							}
-						};
-						break loop;
-					}
-				};
-				this.columnsLayout.push({
-					id: columnId,
-					name: this.twitterLists[i].name,
-					type: 'list',
-					listId: twitterListId,
-					hashtags: []
-				});
-			}
-		}
-	};
+    loop:
+    for (var i = 0; i < this.twitterLists.length; i++) {
+        if(this.twitterLists[i].id == twitterListId){
+            if(columnId){
+                for (var y = 0; y < this.columnsLayout.length; y++) {
+                    if(this.columnsLayout[y].id === columnId){
+                        this.columnsLayout[y].name = this.twitterLists[i].name;
+                        this.columnsLayout[y].type = 'list';
+                        this.columnsLayout[y].listId = twitterListId;
+                        this.columnsLayout[y].hashtags = []
+                        for (var z = 0; z < this.messagesColumnsList.length; z++) {
+                            if(this.messagesColumnsList[z].id === columnId){
+                                this.messagesColumnsList[z].type = 'list';
+                                this.messagesColumnsList[z].updateHashtagsList(
+                                    this.columnsLayout[y].hashtags
+                                );
+                            }
+                        };
+                        break loop;
+                    }
+                };
+                this.columnsLayout.push({
+                    id: columnId,
+                    name: this.twitterLists[i].name,
+                    type: 'list',
+                    listId: twitterListId,
+                    hashtags: []
+                });
+            }
+        }
+    };
 
-	this.updateListsToDisplay();
-	this.updateColumnsLayout();
-	this.updateColumnsTwitterLists();
+    this.updateListsToDisplay();
+    this.updateColumnsLayout();
+    this.updateColumnsTwitterLists();
 }
 
 MessagesDisplay.prototype.useHashtag = function(columnId, hashtag){
-	var exist = false
-	var hashtagsArray = [];
-	for (var y = 0; y < this.columnsLayout.length; y++) {
-		if(this.columnsLayout[y].id === columnId){
-			this.columnsLayout[y].name = '#' + hashtag;
-			this.columnsLayout[y].type = 'tracking';
-			this.columnsLayout[y].listId = null;
-			this.columnsLayout[y].hashtags.push(hashtag);
-			exist = true;
-			hashtagsArray = this.columnsLayout[y].hashtags;
-		}
-	};
-	if(!exist){
-		this.columnsLayout.push({
-			id: columnId,
-			name: '#' + hashtag,
-			type: 'tracking',
-			hashtags: [hashtag]
-		});
-		hashtagsArray = this.columnsLayout[y].hashtags;
-	}
+    var exist = false
+    var hashtagsArray = [];
+    for (var y = 0; y < this.columnsLayout.length; y++) {
+        if(this.columnsLayout[y].id === columnId){
+            this.columnsLayout[y].name = '#' + hashtag;
+            this.columnsLayout[y].type = 'tracking';
+            this.columnsLayout[y].listId = null;
+            this.columnsLayout[y].hashtags.push(hashtag);
+            exist = true;
+            hashtagsArray = this.columnsLayout[y].hashtags;
+        }
+    };
+    if(!exist){
+        this.columnsLayout.push({
+            id: columnId,
+            name: '#' + hashtag,
+            type: 'tracking',
+            hashtags: [hashtag]
+        });
+        hashtagsArray = this.columnsLayout[y].hashtags;
+    }
 
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].id === columnId){
-			this.messagesColumnsList[i].changeName('#' + hashtag);
-			this.messagesColumnsList[i].type = 'tracking';
-			this.messagesColumnsList[i].updateHashtagsList(hashtagsArray);
-		}
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].id === columnId){
+            this.messagesColumnsList[i].changeName('#' + hashtag);
+            this.messagesColumnsList[i].type = 'tracking';
+            this.messagesColumnsList[i].updateHashtagsList(hashtagsArray);
+        }
+    };
 
-	// console.log('Setting up the column as hashtag');
-	this.updateListsToDisplay();
-	this.updateColumnsLayout();
-	this.updateColumnsTwitterLists();
-	this.updateTagsToDisplay();
+    // console.log('Setting up the column as hashtag');
+    this.updateListsToDisplay();
+    this.updateColumnsLayout();
+    this.updateColumnsTwitterLists();
+    this.updateTagsToDisplay();
 }
 
 /**
@@ -262,28 +266,28 @@ MessagesDisplay.prototype.useHashtag = function(columnId, hashtag){
  */
 MessagesDisplay.prototype.addHashtag = function(columnId, hashtag){
 
-	var hashtagsArray = [];
-	loop:
-	for (var y = 0; y < this.columnsLayout.length; y++) {
-		if(this.columnsLayout[y].id === columnId){
-			for (var i = 0; i < this.columnsLayout[y].hashtags.length; i++) {
-				if(this.columnsLayout[y].hashtags[i] == hashtag){
-					break loop;
-				}
-			};
-			this.columnsLayout[y].hashtags.push(hashtag);
-			hashtagsArray = this.columnsLayout[y].hashtags;
-		}
-	};
+    var hashtagsArray = [];
+    loop:
+    for (var y = 0; y < this.columnsLayout.length; y++) {
+        if(this.columnsLayout[y].id === columnId){
+            for (var i = 0; i < this.columnsLayout[y].hashtags.length; i++) {
+                if(this.columnsLayout[y].hashtags[i] == hashtag){
+                    break loop;
+                }
+            };
+            this.columnsLayout[y].hashtags.push(hashtag);
+            hashtagsArray = this.columnsLayout[y].hashtags;
+        }
+    };
 
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].id === columnId){
-			this.messagesColumnsList[i].updateHashtagsList(hashtagsArray);
-		}
-	};
-	// console.log('Updating the column hashtag after adding');
-	this.updateColumnsLayout();
-	this.updateTagsToDisplay();
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].id === columnId){
+            this.messagesColumnsList[i].updateHashtagsList(hashtagsArray);
+        }
+    };
+    // console.log('Updating the column hashtag after adding');
+    this.updateColumnsLayout();
+    this.updateTagsToDisplay();
 }
 
 /**
@@ -293,24 +297,24 @@ MessagesDisplay.prototype.addHashtag = function(columnId, hashtag){
  * @return {[type]}          [description]
  */
 MessagesDisplay.prototype.removeHashtag = function(columnId, hashtag){
-	var hashtagsArray = [];
-	// console.log('Trying to remove hashtag ', hashtag);
-	for (var y = 0; y < this.columnsLayout.length; y++) {
-		if(this.columnsLayout[y].id === columnId){
-			if(this.columnsLayout[y].hashtags.indexOf(hashtag) != -1){
-				this.columnsLayout[y].hashtags.splice(this.columnsLayout[y].hashtags.indexOf(hashtag), 1);
-				hashtagsArray = this.columnsLayout[y].hashtags;
-				// console.log('Updating the column hashtag after removing');
-				this.updateColumnsLayout();
-				this.updateTagsToDisplay();
-				for (var y = 0; y < this.messagesColumnsList.length; y++) {
-					if(this.messagesColumnsList[y].id === columnId){
-						this.messagesColumnsList[y].updateHashtagsList(hashtagsArray);
-					}
-				};
-			}
-		}
-	};
+    var hashtagsArray = [];
+    // console.log('Trying to remove hashtag ', hashtag);
+    for (var y = 0; y < this.columnsLayout.length; y++) {
+        if(this.columnsLayout[y].id === columnId){
+            if(this.columnsLayout[y].hashtags.indexOf(hashtag) != -1){
+                this.columnsLayout[y].hashtags.splice(this.columnsLayout[y].hashtags.indexOf(hashtag), 1);
+                hashtagsArray = this.columnsLayout[y].hashtags;
+                // console.log('Updating the column hashtag after removing');
+                this.updateColumnsLayout();
+                this.updateTagsToDisplay();
+                for (var y = 0; y < this.messagesColumnsList.length; y++) {
+                    if(this.messagesColumnsList[y].id === columnId){
+                        this.messagesColumnsList[y].updateHashtagsList(hashtagsArray);
+                    }
+                };
+            }
+        }
+    };
 }
 
 /**
@@ -319,26 +323,26 @@ MessagesDisplay.prototype.removeHashtag = function(columnId, hashtag){
  * @param  {String} slug     List's slug
  */
 MessagesDisplay.prototype.deleteColumn = function(columnId){
-	for (var y = 0; y < this.columnsLayout.length; y++) {
-		if(this.columnsLayout[y].id === columnId){
-			this.columnsLayout.splice(y, 1);
-		}
-	};
+    for (var y = 0; y < this.columnsLayout.length; y++) {
+        if(this.columnsLayout[y].id === columnId){
+            this.columnsLayout.splice(y, 1);
+        }
+    };
 
-	for (var y = 0; y < this.messagesColumnsList.length; y++) {
-		if(this.messagesColumnsList[y].id === columnId){
-			this.messagesColumnsList.splice(y, 1);
-			var columnToRemove = document.getElementById('tweets-column-' + columnId);
-			this.messagesColumnsHTML.removeChild(columnToRemove);
-		}
-	};
+    for (var y = 0; y < this.messagesColumnsList.length; y++) {
+        if(this.messagesColumnsList[y].id === columnId){
+            this.messagesColumnsList.splice(y, 1);
+            var columnToRemove = document.getElementById('tweets-column-' + columnId);
+            this.messagesColumnsHTML.removeChild(columnToRemove);
+        }
+    };
 
-	this.updateListsToDisplay();
-	this.updateColumnsLayout();
-	this.updateColumnsTwitterLists();
-	this.updateTagsToDisplay();
+    this.updateListsToDisplay();
+    this.updateColumnsLayout();
+    this.updateColumnsTwitterLists();
+    this.updateTagsToDisplay();
 
-	console.log('Column ' + columnId + ' deleted from columnsLayout: ', this.columnsLayout);
+    console.log('Column ' + columnId + ' deleted from columnsLayout: ', this.columnsLayout);
 }
 
 /**
@@ -347,90 +351,92 @@ MessagesDisplay.prototype.deleteColumn = function(columnId){
  * @return {Objecy}          Messages not present in the current list
  */
 MessagesDisplay.prototype.compareCurrentListWithIncoming = function(incoming, current){
-	// Return the elements not present in the array
-	Array.prototype.diff = function(a) {
-	    return this.filter(function(array) {
-	    		var exist = false;
-	    		for (var i = 0; i < a.length; i++) {
-	    			if(array.id_str === a[i].id_str){
-	    				exist = true;
-	    			}
-	    		};
-	    		if(!exist){
-	    			return array;
-	    		}
-	    });
-	};
-	var messagesToAdd = [];	
-	var messagesToDelete = [];
-	
-	messagesToAdd = incoming.diff(current);
+    // Return the elements not present in the array
+    Array.prototype.diff = function(a) {
+        return this.filter(function(array) {
+            var exist = false;
+            for (var i = 0; i < a.length; i++) {
+                if(array.id_str === a[i].id_str){
+                    exist = true;
+                }
+            };
+            if(!exist){
+                return array;
+            }
+        });
+    };
+    var messagesToAdd = []; 
+    var messagesToDelete = [];
+    
+    messagesToAdd = incoming.diff(current);
 
-	if(this.numberMessagesLimit > incoming.length){
-		// Remove duplicates
-		Array.prototype.unique = function() {
-		    var a = this.concat();
-		    for(var i=0; i<a.length; ++i) {
-		        for(var j=i+1; j<a.length; ++j) {
-		            if(a[i].id_str === a[j].id_str)
-		                a.splice(j--, 1);
-		        }
-		    }
+    console.log('incoming: ', incoming.length, ', current: ', current.length);
 
-		    return a;
-		};
+    if(this.numberMessagesLimit > incoming.length){
+        // Remove duplicates
+        Array.prototype.unique = function() {
+            var a = this.concat();
+            for(var i=0; i<a.length; ++i) {
+                for(var j=i+1; j<a.length; ++j) {
+                    if(a[i].id_str === a[j].id_str)
+                        a.splice(j--, 1);
+                }
+            }
 
-		// Merge the current and the incoming arrays
-		var mergedArrays = current.concat(incoming).unique();
+            return a;
+        };
 
-		/**
-		 * Compare the id_str from bigger to smaller
-		 * @param  {Array} a   [message]
-		 * @param  {Array} b   [message]
-		 * @return {Integer}   [Comparison result]
-		 */
-		function compareIdsInversed(a, b){
-			return  b.id_str - a.id_str;
-		}
+        // Merge the current and the incoming arrays
+        var mergedArrays = current.concat(incoming).unique();
 
-		// Sort the id_str from bigger to smaller to be sure it is ordered
-		mergedArrays.sort(compareIdsInversed);
-		
-		// Simulate the array of messages if there were no deletion by taking the last messages allowed by the messages limit defined in MessagesDisplay
-		var expectedArrayWithoutDeletion = mergedArrays.slice(0, this.numberMessagesLimit);
+        /**
+         * Compare the id_str from bigger to smaller
+         * @param  {Array} a   [message]
+         * @param  {Array} b   [message]
+         * @return {Integer}   [Comparison result]
+         */
+        function compareIdsInversed(a, b){
+            return  b.id_str - a.id_str;
+        }
 
-		messagesToDelete = expectedArrayWithoutDeletion.diff(incoming);
+        // Sort the id_str from bigger to smaller to be sure it is ordered
+        mergedArrays.sort(compareIdsInversed);
+        
+        // Simulate the array of messages if there were no deletion by taking the last messages allowed by the messages limit defined in MessagesDisplay
+        var expectedArrayWithoutDeletion = mergedArrays.slice(0, this.numberMessagesLimit);
 
-		// console.log('messagesToDelete: ', messagesToDelete);
-	}
+        messagesToDelete = expectedArrayWithoutDeletion.diff(incoming);
 
-	return {
-		messagesToAdd: messagesToAdd,
-		messagesToDelete: messagesToDelete
-	};
+        // console.log('messagesToDelete: ', messagesToDelete);
+    }
+
+    return {
+        messagesToAdd: messagesToAdd,
+        messagesToDelete: messagesToDelete
+    };
 }
 
 /**
  * Create a blank column
  */
 MessagesDisplay.prototype.createBlankColumn = function(){
-	this.columnsId++;
-	for (var i = 0; i < this.columnsLayout.length; i++) {
-		while(this.columnsLayout[i].id === this.columnsId){
-			this.columnsId++;
-		}
-	};
-	var column = new MessagesColumn(this.columnsId , 
-									'New column', 
-									'None', 
-									this);
-	this.messagesColumnsList.push(column);
-	this.updateColumnsTwitterLists();
-	var generatedColumn = column.generateColumn();
+    this.columnsId++;
+    for (var i = 0; i < this.columnsLayout.length; i++) {
+        while(this.columnsLayout[i].id === this.columnsId){
+            this.columnsId++;
+        }
+    };
+    var column = new MessagesColumn(this.columnsId,
+                                    'New column',
+                                    'None',
+                                    this);
+    this.messagesColumnsList.push(column);
+    this.updateColumnsTwitterLists();
+    var generatedColumn = column.generateColumn();
 
-	// console.log('Created: ', column);
+    // console.log('Created: ', column);
 
-	this.messagesColumnsHTML.appendChild(generatedColumn);
+    this.messagesColumnsHTML.appendChild(generatedColumn);
 }
 
 /**
@@ -439,60 +445,60 @@ MessagesDisplay.prototype.createBlankColumn = function(){
  * @param {String} columnHeaderName Column's name
  */
 MessagesDisplay.prototype.createUserColumn = function(){
-	this.columnsId++;
-	var columnHeaderName = 'Home';
-	var type = 'home';
+    this.columnsId++;
+    var columnHeaderName = 'Home';
+    var type = 'home';
 
 
-	var alreadyRegistered = false;
-	for (var i = 0; i < this.columnsLayout.length; i++) {
-		if(this.columnsLayout[i].type === type){
-			alreadyRegistered = true;
-		}
-	};
+    var alreadyRegistered = false;
+    for (var i = 0; i < this.columnsLayout.length; i++) {
+        if(this.columnsLayout[i].type === type){
+            alreadyRegistered = true;
+        }
+    };
 
-	var column = new MessagesColumn(type, columnHeaderName, type, this);
-	if(!alreadyRegistered){
+    var column = new MessagesColumn(type, columnHeaderName, type, this);
+    if(!alreadyRegistered){
 
-		// console.log('Created: ', column);
+        // console.log('Created: ', column);
 
-		this.columnsLayout.push({
-			id: type,
-			name: columnHeaderName,
-			type: type
-		});
-	}
+        this.columnsLayout.push({
+            id: type,
+            name: columnHeaderName,
+            type: type
+        });
+    }
 
-	var alreadyExist = false;
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].type === type){
-			var alreadyExist = true;
-			var column = this.messagesColumnsList[i];
-		}
-	};
+    var alreadyExist = false;
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].type === type){
+            var alreadyExist = true;
+            var column = this.messagesColumnsList[i];
+        }
+    };
 
-	if(!alreadyExist){
-		this.messagesColumnsList.push(column);
-	}
+    if(!alreadyExist){
+        this.messagesColumnsList.push(column);
+    }
 
-	var generatedColumn = column.generateColumn();
+    var generatedColumn = column.generateColumn();
 
-	this.messagesColumnsHTML.insertBefore(generatedColumn, this.messagesColumnsHTML.firstChild);
+    this.messagesColumnsHTML.insertBefore(generatedColumn, this.messagesColumnsHTML.firstChild);
 }
 
 /**
  * Display the columns listed in the columns list
  */
 MessagesDisplay.prototype.displayColumns = function(){
-	this.messagesColumnsHTML.innerHTML = "";
+    this.messagesColumnsHTML.innerHTML = "";
 
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		var newTweetColumn = this.messagesColumnsList[i].generateColumn();
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        var newTweetColumn = this.messagesColumnsList[i].generateColumn();
 
-		this.messagesColumnsHTML.appendChild(newTweetColumn);
-	};
+        this.messagesColumnsHTML.appendChild(newTweetColumn);
+    };
 
-	this.createColumnCreator();
+    this.createColumnCreator();
 }
 
 /**
@@ -500,7 +506,7 @@ MessagesDisplay.prototype.displayColumns = function(){
  * @return {Object} Column's list
  */
 MessagesDisplay.prototype.getColumnList = function(){
-	return this.messagesColumnsList;
+    return this.messagesColumnsList;
 }
 
 /**
@@ -509,12 +515,12 @@ MessagesDisplay.prototype.getColumnList = function(){
  * @return {Object} newMessage  Added message
  */
 MessagesDisplay.prototype.addOneMessage = function(message, streamDestination){
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].id == streamDestination){
-			var newMessage = this.messagesColumnsList[i].addMessage(message, streamDestination);
-			return newMessage;
-		}
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].id == streamDestination){
+            var newMessage = this.messagesColumnsList[i].addMessage(message, streamDestination);
+            return newMessage;
+        }
+    };
 }
 
 /**
@@ -523,25 +529,36 @@ MessagesDisplay.prototype.addOneMessage = function(message, streamDestination){
  * @return {Object} newMessage  Added message
  */
 MessagesDisplay.prototype.addAllMessages = function(allMessages, id){
-	// console.log('Searching', id, ' in this.messagesColumnsList ', this.messagesColumnsList);
-	for (var y = 0; y < this.messagesColumnsList.length; y++) {
-		if(this.messagesColumnsList[y].id === id){
-			// Reset the messages list before adding new ones
-			var comparison = this.compareCurrentListWithIncoming(allMessages, this.messagesColumnsList[y].messagesList);
-			console.log('They are ', comparison.messagesToAdd.length, ' messagesToAdd to ', id);
-			// console.log('messagesToAdd : ', comparison.messagesToAdd);
-			var messagesToDisplay = [];
-			for (var z = 0; z < comparison.messagesToAdd.length; z++) {
-				messagesToDisplay.push(this.messagesColumnsList[y].addMessage(comparison.messagesToAdd[z], id));
-			}
-			// Code to be enabled once Twitter message deletion politic with the REST API is understood
-			// console.log('messagesToDelete : ', comparison.messagesToDelete);
-			// for (var i = 0; i < comparison.messagesToDelete.length; y++) {
-			// 	this.deleteMessage(comparison.messagesToDelete[y]); 
-			// };
-			return {streamSource: this.messagesColumnsList[y].id};
-		}
-	}
+    //  console.log('Searching', id, ' in this.messagesColumnsList ',
+    //  this.messagesColumnsList);
+    for (var y = 0; y < this.messagesColumnsList.length; y++) {
+        if(this.messagesColumnsList[y].id === id){
+            // Reset the messages list before adding new ones
+            var comparison = this.compareCurrentListWithIncoming(
+                allMessages,
+                this.messagesColumnsList[y].messagesList
+            );
+            console.log('They are ', comparison.messagesToAdd.length,
+                ' messagesToAdd to ', id);
+            // console.log('messagesToAdd : ', comparison.messagesToAdd);
+            var messagesToDisplay = [];
+            for (var z = 0; z < comparison.messagesToAdd.length; z++) {
+                messagesToDisplay.push(
+                    this.messagesColumnsList[y]
+                        .addMessage(comparison.messagesToAdd[z], id)
+                );
+            }
+            // Code to be enabled once Twitter message deletion politic with
+            // the REST API is understood
+
+            // console.log('messagesToDelete : ', comparison.messagesToDelete);
+            // for (var i = 0; i < comparison.messagesToDelete.length; y++) {
+            //  this.deleteMessage(comparison.messagesToDelete[y]);
+            // };
+            // return {streamSource: this.messagesColumnsList[y].id};
+            return messagesToDisplay;
+        }
+    }
 }
 
 /**
@@ -549,11 +566,11 @@ MessagesDisplay.prototype.addAllMessages = function(allMessages, id){
  * @param  {Object} message Message to be added
  */
 MessagesDisplay.prototype.displayOneMessage = function(message){
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].id == message.streamSource){
-			this.messagesColumnsList[i].displayOneMessage(message);
-		}
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].id == message.streamSource){
+            this.messagesColumnsList[i].displayOneMessage(message);
+        }
+    };
 }
 
 /**
@@ -561,11 +578,11 @@ MessagesDisplay.prototype.displayOneMessage = function(message){
  * @param  {Object} message Message to be added
  */
 MessagesDisplay.prototype.displayAllMessages = function(message){
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].id == message.streamSource){
-			this.messagesColumnsList[i].displayAllMessages();
-		}
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].id == message.streamSource){
+            this.messagesColumnsList[i].displayAllMessages();
+        }
+    };
 }
 
 /**
@@ -573,13 +590,13 @@ MessagesDisplay.prototype.displayAllMessages = function(message){
  * @param  {Object} message Message to be added
  */
 MessagesDisplay.prototype.displayAllMessagesOnePerOne = function(messages){
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		for (var y = messages.length - 1; y >= 0; y--) {
-			if(this.messagesColumnsList[i].id == messages[y].streamSource){
-				this.messagesColumnsList[i].displayOneMessage(messages[y]);
-			}
-		};
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        for (var y = messages.length - 1; y >= 0; y--) {
+            if(this.messagesColumnsList[i].id === messages[y].streamSource){
+                this.messagesColumnsList[i].displayOneMessage(messages[y]);
+            }
+        };
+    };
 }
 
 /**
@@ -587,55 +604,55 @@ MessagesDisplay.prototype.displayAllMessagesOnePerOne = function(messages){
  * @param  {Object} message Message to be deleted
  */
 MessagesDisplay.prototype.deleteMessage = function(message){
-	for (var i = 0; i < this.messagesColumnsList.length; i++) {
-		if(this.messagesColumnsList[i].type !== 'list'){
-			this.messagesColumnsList[i].deleteMessage(message);
-			console.log('Column where to delete found');
-		}
-	};
+    for (var i = 0; i < this.messagesColumnsList.length; i++) {
+        if(this.messagesColumnsList[i].type !== 'list'){
+            this.messagesColumnsList[i].deleteMessage(message);
+            console.log('Column where to delete found');
+        }
+    };
 }
 
 /**
  * Sends to server the all the lists to be requested
  */
 MessagesDisplay.prototype.updateListsToDisplay = function(){
-	var listsToRequest = [];
+    var listsToRequest = [];
 
-	for (var i = 0; i < this.columnsLayout.length; i++) {
-		if(this.columnsLayout[i].type === 'list'){
-			for (var y = 0; y < this.twitterLists.length; y++) {
-				if(this.columnsLayout[i].listId === this.twitterLists[y].id){
-					listsToRequest.push({id: this.twitterLists[y].id});
-				}
-			};
-		}
-	};
-	socket.emit('update lists request', listsToRequest);
-	// console.log('emitting ', listsToRequest);
-	return listsToRequest;
+    for (var i = 0; i < this.columnsLayout.length; i++) {
+        if(this.columnsLayout[i].type === 'list'){
+            for (var y = 0; y < this.twitterLists.length; y++) {
+                if(this.columnsLayout[i].listId === this.twitterLists[y].id){
+                    listsToRequest.push({id: this.twitterLists[y].id});
+                }
+            };
+        }
+    };
+    socket.emit('update lists request', listsToRequest);
+    // console.log('emitting ', listsToRequest);
+    return listsToRequest;
 }
 
 /**
  * Sends to server the all the tags to be requested
  */
 MessagesDisplay.prototype.updateTagsToDisplay = function(){
-	var tagsToRequest = [];
+    var tagsToRequest = [];
 
-	for (var i = 0; i < this.columnsLayout.length; i++) {
-		if(this.columnsLayout[i].type === 'tracking'){
-			for (var y = 0; y < this.columnsLayout[i].hashtags.length; y++) {
-				tagsToRequest.push(this.columnsLayout[i].hashtags[y]);
-			};
-		}
-	};
-	socket.emit('update tags request', tagsToRequest);
-	console.log('emitting ', tagsToRequest);
-	return tagsToRequest;
+    for (var i = 0; i < this.columnsLayout.length; i++) {
+        if(this.columnsLayout[i].type === 'tracking'){
+            for (var y = 0; y < this.columnsLayout[i].hashtags.length; y++) {
+                tagsToRequest.push(this.columnsLayout[i].hashtags[y]);
+            };
+        }
+    };
+    socket.emit('update tags request', tagsToRequest);
+    console.log('emitting ', tagsToRequest);
+    return tagsToRequest;
 }
 
 /**
  * Sends to the server the column's layout to be saved
  */
 MessagesDisplay.prototype.updateColumnsLayout = function(){
-	socket.emit('update columns layout', this.columnsLayout);
+    socket.emit('update columns layout', this.columnsLayout);
 }
