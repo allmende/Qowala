@@ -435,7 +435,8 @@ input[type="text"].tagInput:-ms-input-placeholder {
 }
 
 .tweets-column + .tweets-column {
-    border-left: 5px solid #1a1a1a;
+    box-shadow: -4px 4px 5px #242424;
+    margin-left: 5px;
 }
 
 .tweets-column-header {
@@ -444,6 +445,7 @@ input[type="text"].tagInput:-ms-input-placeholder {
     margin: 0;
     padding: 10px 20px;
     position: relative;
+    box-shadow: -2px 5px 5px #242424;
 }
 
 .tweets-column-header h3 {
