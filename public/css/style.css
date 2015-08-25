@@ -779,11 +779,13 @@ input[type="text"].tagInput:-ms-input-placeholder {
 
 .tweets li{
     list-style-type: none;
-    /*background-color: #5072b2;*/
     color: white;
+    background-color: #5b5959;
     min-height: 48px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: -2px 2px 4px #242424;
     padding: 10px;
-    border-bottom: 1px solid #119955;
     position: relative;
     transform: scaleY(0);
     transform-origin: 50% 0;
