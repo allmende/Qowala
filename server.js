@@ -29,7 +29,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 // Setup sessions
 app.use(session({
-	secret: 'this1337is42a1337super42secret1337keyword'
+  secret: 'this1337is42a1337super42secret1337keyword'
 }));
 
 // Configuration of body parser
